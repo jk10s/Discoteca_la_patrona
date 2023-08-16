@@ -16,10 +16,10 @@ CREATE TABLE Clientes (
 -- Creación de la tabla "Empleados"
 CREATE TABLE Empleados (
     IDEmpleado INT PRIMARY KEY AUTO_INCREMENT,
-    Nombre VARCHAR(100) NOT NULL,
+    email VARCHAR(100) NOT NULL,
     CorreoElectronico VARCHAR(100) NOT NULL,
-    Contrasena VARCHAR(100) NOT NULL,
-    TipoCuenta ENUM('administrador', 'usuario empleado') NOT NULL,
+    password VARCHAR(100) NOT NULL,
+    TipoCuenta ENUM('administrador', 'empleado') NOT NULL,
     EsAdministrador BOOLEAN NOT NULL DEFAULT 0
 );
 
