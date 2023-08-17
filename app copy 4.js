@@ -463,51 +463,37 @@ app.post('/guardar-venta', (req, res) => {
         totalFinal
     } = req.body;
 
-    try {
-        // Convertir los valores numéricos
-        const totalVentaCalculado = parseFloat(totalVenta.replace('$', ''));
-        const totalExtra = parseFloat(costosExtra);
-        const totalFinalNumerico = parseFloat(totalFinal.replace('$', ''));
+    // Convertir los valores numéricos
+    const totalVentaCalculado = parseFloat(totalVenta.replace('$', ''));
+    const totalExtra = parseFloat(costosExtra);
+    const totalFinalNumerico = parseFloat(totalFinal.replace('$', ''));
 
-        // Obtener la fecha actual
-        const fechaVenta = new Date();
+    // Obtener la fecha actual
+    const fechaVenta = new Date();
 
-        // Obtener el IDEmpleado desde la sesión
-        const IDEmpleado = req.session.IDEmpleado;
+    // Obtener el IDEmpleado desde la sesión
+    const IDEmpleado = req.session.IDEmpleado;
 
-        // Crear el objeto de detalles de la venta
-        const detallesVenta = JSON.stringify({
-            productos,
-            cantidad
-        });
+    // Crear el objeto de detalles de la venta
+    const detallesVenta = JSON.stringify({
+        productos,
+        cantidad
+    });
 
-        console.log('Valores antes de la inserción:');
-        console.log('Total Venta:', totalVentaCalculado);
-        console.log('Total Extra:', totalExtra);
-        console.log('Total Final:', totalFinalNumerico);
-        console.log('Fecha Venta:', fechaVenta);
-        console.log('ID Empleado:', IDEmpleado);
-        console.log('Detalles Venta:', detallesVenta);
+    // Insertar la venta en la base de datos
+    const query = 'INSERT INTO Ventas (IDCliente, IDEmpleado, FechaVenta, TotalVenta, TotalExtra, TotalFinal, DetallesVenta) VALUES (?, ?, ?, ?, ?, ?, ?)';
+    const values = [cliente, IDEmpleado, fechaVenta, totalVentaCalculado, totalExtra, totalFinalNumerico, detallesVenta];
 
-        // Insertar la venta en la base de datos
-        const query = 'INSERT INTO Ventas (IDCliente, IDEmpleado, FechaVenta, TotalVenta, TotalExtra, TotalFinal, DetallesVenta) VALUES (?, ?, ?, ?, ?, ?, ?)';
-        const values = [cliente, IDEmpleado, fechaVenta, totalVentaCalculado, totalExtra, totalFinalNumerico, detallesVenta];
-
-        connection.query(query, values, (error, results) => {
-            if (error) {
-                console.error('Error al guardar la venta:', error);
-                res.status(500).send('Error al guardar la venta.');
-            } else {
-                console.log('Venta registrada exitosamente.');
-                res.redirect('/ventas'); // Redirigir a la página de ventas o a donde desees
-            }
-        });
-    } catch (error) {
-        console.error('Error general:', error);
-        res.status(500).send('Error general al procesar la venta.');
-    }
+    connection.query(query, values, (error, results) => {
+        if (error) {
+            console.error('Error al guardar la venta:', error);
+            res.status(500).send('Error al guardar la venta.');
+        } else {
+            console.log('Venta registrada exitosamente.');
+            res.redirect('/ventas'); // Redirigir a la página de ventas o a donde desees
+        }
+    });
 });
-
 
 
 
@@ -597,111 +583,7 @@ app.post('/marcar-venta-finalizada', (req, res) => {
     });
 });
 
-// ...
 
-// Importa los módulos necesarios y configura la conexión a la base de datos
-
-// Definición de la función obtenerDatosDelReporte
-function obtenerDatosDelReporte(tipoReporte) {
-    // Aquí realizarías las consultas a la base de datos y cálculos necesarios
-    // para obtener los datos del reporte según el tipo de reporte seleccionado
-    // y luego devolverías esos datos en un objeto.
-  
-    // Ejemplo:
-    if (tipoReporte === 'diario') {
-      // Realiza la consulta y cálculos para el reporte diario
-      const reporteDiario = {
-        tipoReporte: 'Diario',
-        totalVentas: 1000.50 // Este valor debería ser obtenido de la consulta a la base de datos
-        // Agrega más propiedades según sea necesario para tu reporte
-      };
-      return reporteDiario;
-    } else if (tipoReporte === 'semanal') {
-      // Realiza la consulta y cálculos para el reporte semanal
-      const reporteSemanal = {
-        tipoReporte: 'Semanal',
-        totalVentas: 5000.75 // Este valor debería ser obtenido de la consulta a la base de datos
-        // Agrega más propiedades según sea necesario para tu reporte
-      };
-      return reporteSemanal;
-    } else if (tipoReporte === 'mensual') {
-      // Realiza la consulta y cálculos para el reporte mensual
-      const reporteMensual = {
-        tipoReporte: 'Mensual',
-        totalVentas: 20000.30 // Este valor debería ser obtenido de la consulta a la base de datos
-        // Agrega más propiedades según sea necesario para tu reporte
-      };
-      return reporteMensual;
-    } else {
-      return null; // Tipo de reporte no válido
-    }
-  }
-  
-  // Rutas y configuración de Express
-  // ...
-  
-  // Definición de la ruta para generar el reporte
-  app.post('/generar-reporte', (req, res) => {
-    const tipoReporte = req.body.tipoReporte;
-    const reporte = obtenerDatosDelReporte(tipoReporte);
-    res.render('reporte', { reporte });
-  });
-  
-
-
-// app.post('/generar-reporte', verificarSesion, (req, res) => {
-//     const tipoReporte = req.body.tipoReporte;
-
-//     if (tipoReporte === 'diario') {
-//         generarReporteDiario((error, totalVentas) => {
-//             if (error) {
-//                 res.status(500).send('Error al generar el reporte diario.');
-//             } else {
-//                 const reporte = {
-//                     tipoReporte: 'Diario',
-//                     totalVentas
-//                 };
-//                 res.render('reporte', { reporte });
-//             }
-//         });
-//     } else if (tipoReporte === 'semanal') {
-//         // Generar reporte semanal
-//         // ...
-//     } else if (tipoReporte === 'mensual') {
-//         // Generar reporte mensual
-//         // ...
-//     } else {
-//         res.status(400).send('Tipo de reporte inválido.');
-//     }
-// });
-
-
-app.post('/generar-reporte', (req, res) => {
-    const tipoReporte = req.body.tipoReporte;
-
-    // Aquí obtienes los datos del reporte según el tipo de reporte seleccionado
-    const reporte = obtenerDatosDelReporte(tipoReporte);
-
-    // Asegúrate de que reporte no sea undefined antes de renderizar la vista
-    if (reporte) {
-        res.render('reporte', { reporte });
-    } else {
-        res.status(500).send('Error al obtener los datos del reporte.');
-    }
-});
-
-
-// ...
-// ...
-
-// Ruta para acceder a la página de selección de tipo de reporte
-app.get('/seleccionar-reporte', (req, res) => {
-    // Aquí obtienes los datos del reporte y los almacenas en una variable llamada 'reporte'
-    const reporte = obtenerDatosDelReporte(); // Debes reemplazar esto con tu lógica para obtener los datos del reporte
-
-    // Luego, renderizas la vista 'reporte.ejs' y pasas la variable 'reporte' al template
-    res.render('reporte', { reporte: reporte });
-});
 
 
 
