@@ -138,8 +138,115 @@ app.post('/registrar', (req, res) => {
 process.on('SIGINT', () => {
     connection.end((err) => {
         if (err) {
-            console.error('Error al cerrar la conexión con la base de datos:', err.message);
-        }
+            console.error('Error al cerrar la conexión con la base de datos  }
+  
+            // Rutas y configuración de Express
+            // ...
+            
+            // Definición de la ruta para generar el reporte
+            app.post('/generar-reporte', (req, res) => {
+              const tipoReporte = req.body.tipoReporte;
+              const reporte = obtenerDatosDelReporte(tipoReporte);
+              res.render('reporte', { reporte });
+            });
+            
+          
+          
+          // app.post('/generar-reporte', verificarSesion, (req, res) => {
+          //     const tipoReporte = req.body.tipoReporte;
+          
+          //     if (tipoReporte === 'diario') {
+          //         generarReporteDiario((error, totalVentas) => {
+          //             if (error) {
+          //                 res.status(500).send('Error al generar el reporte diario.');
+          //             } else {
+          //                 const reporte = {
+          //                     tipoReporte: 'Diario',
+          //                     totalVentas
+          //                 };
+          //                 res.render('reporte', { reporte });
+          //             }
+          //         });
+          //     } else if (tipoReporte === 'semanal') {
+          //         // Generar reporte semanal
+          //         // ...
+          //     } else if (tipoReporte === 'mensual') {
+          //         // Generar reporte mensual
+          //         // ...
+          //     } else {
+          //         res.status(400).send('Tipo de reporte inválido.');
+          //     }
+          // });
+          
+          
+          app.post('/generar-reporte', (req, res) => {
+              const tipoReporte = req.body.tipoReporte;
+          
+              // Aquí obtienes los datos del reporte según el tipo de reporte seleccionado
+              const reporte = obtenerDatosDelReporte(tipoReporte);
+          
+              // Asegúrate de que reporte no sea undefined antes de renderizar la vista
+              if (reporte) {
+                  res.render('reporte', { reporte });
+              } else {
+                  res.status(500).send('Error al obtener los datos del reporte.');
+              }
+          });
+  }
+  
+  // Rutas y configuración de Express
+  // ...
+  
+  // Definición de la ruta para generar el reporte
+  app.post('/generar-reporte', (req, res) => {
+    const tipoReporte = req.body.tipoReporte;
+    const reporte = obtenerDatosDelReporte(tipoReporte);
+    res.render('reporte', { reporte });
+  });
+  
+
+
+// app.post('/generar-reporte', verificarSesion, (req, res) => {
+//     const tipoReporte = req.body.tipoReporte;
+
+//     if (tipoReporte === 'diario') {
+//         generarReporteDiario((error, totalVentas) => {
+//             if (error) {
+//                 res.status(500).send('Error al generar el reporte diario.');
+//             } else {
+//                 const reporte = {
+//                     tipoReporte: 'Diario',
+//                     totalVentas
+//                 };
+//                 res.render('reporte', { reporte });
+//             }
+//         });
+//     } else if (tipoReporte === 'semanal') {
+//         // Generar reporte semanal
+//         // ...
+//     } else if (tipoReporte === 'mensual') {
+//         // Generar reporte mensual
+//         // ...
+//     } else {
+//         res.status(400).send('Tipo de reporte inválido.');
+//     }
+// });
+
+
+app.post('/generar-reporte', (req, res) => {
+    const tipoReporte = req.body.tipoReporte;
+
+    // Aquí obtienes los datos del reporte según el tipo de reporte seleccionado
+    const reporte = obtenerDatosDelReporte(tipoReporte);
+
+    // Asegúrate de que reporte no sea undefined antes de renderizar la vista
+    if (reporte) {
+        res.render('reporte', { reporte });
+    } else {
+        res.status(500).send('Error al obtener los datos del reporte.');
+    }
+});
+          
         process.exit();
     });
 });

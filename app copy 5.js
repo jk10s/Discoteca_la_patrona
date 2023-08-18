@@ -597,85 +597,111 @@ app.post('/marcar-venta-finalizada', (req, res) => {
     });
 });
 
-function calcularTotalVentas(ventas) {
-    // Implementa la lógica para calcular el total de ventas
-    let total = 0;
-    for (const venta of ventas) {
-        total += venta.TotalFinal;
+// ...
+
+// Importa los módulos necesarios y configura la conexión a la base de datos
+
+// Definición de la función obtenerDatosDelReporte
+function obtenerDatosDelReporte(tipoReporte) {
+    // Aquí realizarías las consultas a la base de datos y cálculos necesarios
+    // para obtener los datos del reporte según el tipo de reporte seleccionado
+    // y luego devolverías esos datos en un objeto.
+  
+    // Ejemplo:
+    if (tipoReporte === 'diario') {
+      // Realiza la consulta y cálculos para el reporte diario
+      const reporteDiario = {
+        tipoReporte: 'Diario',
+        totalVentas: 1000.50 // Este valor debería ser obtenido de la consulta a la base de datos
+        // Agrega más propiedades según sea necesario para tu reporte
+      };
+      return reporteDiario;
+    } else if (tipoReporte === 'semanal') {
+      // Realiza la consulta y cálculos para el reporte semanal
+      const reporteSemanal = {
+        tipoReporte: 'Semanal',
+        totalVentas: 5000.75 // Este valor debería ser obtenido de la consulta a la base de datos
+        // Agrega más propiedades según sea necesario para tu reporte
+      };
+      return reporteSemanal;
+    } else if (tipoReporte === 'mensual') {
+      // Realiza la consulta y cálculos para el reporte mensual
+      const reporteMensual = {
+        tipoReporte: 'Mensual',
+        totalVentas: 20000.30 // Este valor debería ser obtenido de la consulta a la base de datos
+        // Agrega más propiedades según sea necesario para tu reporte
+      };
+      return reporteMensual;
+    } else {
+      return null; // Tipo de reporte no válido
     }
-    return total;
-}
+  }
+  
+  // Rutas y configuración de Express
+  // ...
+  
+  // Definición de la ruta para generar el reporte
+  app.post('/generar-reporte', (req, res) => {
+    const tipoReporte = req.body.tipoReporte;
+    const reporte = obtenerDatosDelReporte(tipoReporte);
+    res.render('reporte', { reporte });
+  });
+  
 
 
+// app.post('/generar-reporte', verificarSesion, (req, res) => {
+//     const tipoReporte = req.body.tipoReporte;
 
-// ...
+//     if (tipoReporte === 'diario') {
+//         generarReporteDiario((error, totalVentas) => {
+//             if (error) {
+//                 res.status(500).send('Error al generar el reporte diario.');
+//             } else {
+//                 const reporte = {
+//                     tipoReporte: 'Diario',
+//                     totalVentas
+//                 };
+//                 res.render('reporte', { reporte });
+//             }
+//         });
+//     } else if (tipoReporte === 'semanal') {
+//         // Generar reporte semanal
+//         // ...
+//     } else if (tipoReporte === 'mensual') {
+//         // Generar reporte mensual
+//         // ...
+//     } else {
+//         res.status(400).send('Tipo de reporte inválido.');
+//     }
+// });
 
-// Importa los módulos necesarios y configura la conexión a la base de datos
-// ...
-
-// Importa los módulos necesarios y configura la conexión a la base de datos
-function obtenerDatosDelReporte(tipoReporte, fechaReporte, callback) {
-    const query = 'SELECT FechaVenta, IDEmpleado, IDCliente, TotalFinal FROM Ventas WHERE FechaVenta >= ? AND FechaVenta < ?';
-
-    const startDate = new Date(fechaReporte);
-    startDate.setHours(0, 0, 0, 0); // Establece la hora en 00:00:00 del día seleccionado
-
-    const endDate = new Date(startDate);
-    endDate.setDate(endDate.getDate() + 1); // Agrega un día al día seleccionado
-    endDate.setHours(0, 0, 0, 0); // Establece la hora en 00:00:00 del día siguiente
-
-    connection.query(query, [startDate, endDate], (error, results) => {
-        if (error) {
-            console.error('Error al obtener los datos del reporte:', error);
-            callback(error, null);
-        } else {
-            // Convertir los valores de TotalFinal a números decimales
-            for (const venta of results) {
-                venta.TotalFinal = parseFloat(venta.TotalFinal);
-            }
-            
-            // Realizar los cálculos necesarios para obtener el total de ventas
-            const totalVentas = calcularTotalVentas(results);
-            const reporte = {
-                tipoReporte: tipoReporte,
-                ventas: results,
-                totalVentas: totalVentas
-            };
-            callback(null, reporte);
-        }
-    });
-}
-
-// ...
 
 app.post('/generar-reporte', (req, res) => {
     const tipoReporte = req.body.tipoReporte;
-    const fechaReporte = req.body.fechaReporte; // Agrega esta línea para obtener la fecha del formulario
-    obtenerDatosDelReporte(tipoReporte, fechaReporte, (error, reporte) => {
-        if (error) {
-            res.status(500).send('Error al obtener los datos del reporte.');
-        } else {
-            console.log(reporte);
-            res.render('reporte', { reporte });
-        }
+    obtenerDatosDelReporte(tipoReporte, (error, reporte) => {
+      if (error) {
+        res.status(500).send('Error al obtener los datos del reporte.');
+      } else {
+        res.render('reporte', { reporte });
+      }
     });
-});
+  });
+
 
 // ...
-
+// ...
 
 // Ruta para acceder a la página de selección de tipo de reporte
 app.get('/seleccionar-reporte', (req, res) => {
     // Aquí obtienes los datos del reporte y los almacenas en una variable llamada 'reporte'
-    obtenerDatosDelReporte(req.body.tipoReporte, (error, reporte) => {
-        if (error) {
-            res.status(500).send('Error al obtener los datos del reporte.');
-        } else {
-            // Luego, renderizas la vista 'reporte.ejs' y pasas la variable 'reporte' al template
-            res.render('reporte', { reporte: reporte });
-        }
-    });
+    const reporte = obtenerDatosDelReporte(); // Debes reemplazar esto con tu lógica para obtener los datos del reporte
+
+    // Luego, renderizas la vista 'reporte.ejs' y pasas la variable 'reporte' al template
+    res.render('reporte', { reporte: reporte });
 });
+
+
+
 
 
 

@@ -24,7 +24,7 @@
         </nav>
     </header>
     <div class="container mx-auto p-8">
-        <h1 class="text-3xl font-bold text-center mb-8 text-blue-600">Seleccionar Tipo de Reporte</h1>
+        <h1 class="text-3xl font-bold text-center mb-8 text-blue-600">Generar Reporte</h1>
         <form action="/generar-reporte" method="post" class="max-w-md mx-auto bg-white p-6 rounded-lg shadow-md">
             <div class="mb-4">
                 <label for="tipoReporte" class="block text-sm font-medium text-gray-700">Tipo de Reporte:</label>
@@ -34,19 +34,42 @@
                     <option value="mensual">Mensual</option>
                 </select>
             </div>
+            
+            <!-- Campo de entrada de fecha para el reporte mensual -->
+            <div id="campoFecha" class="mb-4" style="display: none;">
+                <label for="fechaReporte" class="block text-sm font-medium text-gray-700">Fecha:</label>
+                <input type="month" name="fechaReporte" id="fechaReporte" class="mt-1 block w-full py-2 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:ring-blue-200 focus:border-blue-300 transition">
+            </div>
+            
             <div class="text-center">
                 <button type="submit" class="py-2 px-4 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring focus:ring-blue-200 focus:border-blue-300 transition">Generar Reporte</button>
             </div>
         </form>
-
+    
         <% if (reporte) { %>
             <div class="mt-8 max-w-md mx-auto bg-white p-6 rounded-lg shadow-md">
                 <h2 class="text-2xl font-bold text-blue-600 mb-4">Reporte</h2>
                 <p class="text-sm text-gray-700">Tipo de Reporte: <%= reporte.tipoReporte %></p>
-                <p class="text-sm text-gray-700">Total de Ventas: <%= reporte.totalVentas.toFixed(2) %></p>
+                
+                <% if (typeof reporte.totalVentas === 'number') { %>
+                    <p class="text-sm text-gray-700">Total de Ventas: <%= reporte.totalVentas.toFixed(2) %></p>
+                <% } else { %>
+                    <p class="text-sm text-gray-700">Total de Ventas: Error en los datos</p>
+                <% } %>
+    
                 <!-- Mostrar más detalles del reporte si es necesario -->
             </div>
         <% } %>
     </div>
+    
+
+        
+    </div>
 </body>
+<script>
+    document.getElementById('tipoReporte').addEventListener('change', function() {
+        const campoFecha = document.getElementById('campoFecha');
+        campoFecha.style.display = this.value === 'mensual' ? 'block' : 'none';
+    });
+</script>
 </html>
